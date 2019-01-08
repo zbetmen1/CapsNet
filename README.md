@@ -6,7 +6,9 @@ This repository contains Tensorflow implementation of Capsule Network with dynam
 
 Currently, no visualization code is present and this repository will change including adding tests on other datasets and pretrained models.
 
-There are many open source implementations of CapsNet, some that I've looked at are listed bellow:
+There are many open source implementations of CapsNet released before the official implementation, some that I've looked at are listed bellow:
 * [naturomics/CapsNet-Tensorflow](https://github.com/naturomics/CapsNet-Tensorflow)
 * [XifengGuo/CapsNet-Keras](https://github.com/XifengGuo/CapsNet-Keras)
 * [Intel's tutorial site](https://software.intel.com/en-us/articles/understanding-capsule-network-architecture)
+
+Official implementation can be found in repository [Sarasra/models](https://github.com/Sarasra/models) on path 'research/capsule'. In this repo many details that were not presented in the paper are revealed (hyperparameter values, usage of bias etc.).
