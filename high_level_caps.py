@@ -9,6 +9,7 @@ class HighLevelCaps(tf.keras.layers.Layer):
         self.caps_dim = caps_dim
         self.routing_iters = routing_iters
         self.kernel_initializer = tf.keras.initializers.get(kernel_initializer)
+        self.bias_initializer = tf.keras.initializers.get('zeros')
 
     def build(self, input_shape):
         assert len(input_shape) == 3, 'Input must have shape (B, incaps, indim)'
@@ -17,6 +18,7 @@ class HighLevelCaps(tf.keras.layers.Layer):
         prev_caps_outputs = int(input_shape[1])
         self.W = self.add_weight(name='W', shape=[prev_caps_outputs, self.n_caps, self.caps_dim, prev_caps_dim],
                                  initializer=self.kernel_initializer)
+        self.bias = self.add_weight(name='bias', shape=[self.n_caps, self.caps_dim], initializer=self.bias_initializer)
 
         # Mandatory call specified in Keras docs
         super(HighLevelCaps, self).build(input_shape)
@@ -38,7 +40,8 @@ class HighLevelCaps(tf.keras.layers.Layer):
             c = tf.nn.softmax(b, axis=-1)
 
             # Next, compute s(j) = sum_i{c(i,j)*uhat(j|i)}; shape of s is [b, outcaps, outdim]
-            s = tf.einsum('biom,bio->bom', uhat, c)
+            # NOTE: Adding self.bias is extension not documented in a paper (probably as implementation detail)
+            s = tf.einsum('biom,bio->bom', uhat, c) + self.bias
 
             # Squash s to get v; same shape as s
             v = U.squash(s)

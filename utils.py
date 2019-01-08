@@ -31,16 +31,6 @@ def get_sse_loss(alpha):
     return sse_loss
 
 
-def get_learning_rate_decay(decay_rate):
-    def learning_rate_decay(epoch, lr):
-        if epoch:
-            return lr * decay_rate
-        else:
-            return lr
-
-    return learning_rate_decay
-
-
 def batch_generator(x_train, y_train, batch_size, pixel_shift=2):
     generator = tf.keras.preprocessing.image.ImageDataGenerator(width_shift_range=pixel_shift + 1,
                                                                 height_shift_range=pixel_shift + 1)
@@ -48,6 +38,7 @@ def batch_generator(x_train, y_train, batch_size, pixel_shift=2):
     while True:
         x_batch, y_batch = iterator.next()
         yield ([x_batch, y_batch], [y_batch, x_batch])  # output must be tuple (inputs, targets);
+
 
 def load_mnist():
     (x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()

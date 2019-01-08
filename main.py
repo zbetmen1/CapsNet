@@ -4,6 +4,7 @@ import utils as U
 import os
 from sklearn.model_selection import train_test_split
 from caps_net import CapsNet
+from exponential_decay import ExponentialDecay
 
 # Meta options
 U.enable_GPUs([1])
@@ -49,17 +50,21 @@ caps_net_train.compile(optimizer='adam',
 batch_size = 100
 epochs = 200
 validation_size = 10000
-lr_decay_step = 0.99
+
+lr_decay_rate = 0.96
+lr_decay_step = 2000
+
 if not os.path.exists('checkpoints'):
     os.mkdir('checkpoints')
-model_weights_path = 'checkpoints/capsnet_decay_{}.h5'.format(lr_decay_step)
+model_weights_path = 'checkpoints/capsnet_decay_{}.h5'.format(lr_decay_rate)
 
 # Callbacks
-lr_decay_callback = tf.keras.callbacks.LearningRateScheduler(schedule=U.get_learning_rate_decay(lr_decay_step),
-                                                             verbose=True)
+lr_decay_callback = ExponentialDecay(lr_decay_rate, lr_decay_step, verbose_steps=lr_decay_step)
 checkpointer = tf.keras.callbacks.ModelCheckpoint(model_weights_path,
                                                   save_best_only=True,
-                                                  save_weights_only=True, monitor='val_magnitudes_loss', verbose=True)
+                                                  save_weights_only=True,
+                                                  monitor='val_magnitudes_acc',
+                                                  verbose=True)
 
 # Split to train/valid
 (x_train_all, y_train_all), (x_test, y_test) = U.load_mnist()
